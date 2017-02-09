@@ -59,10 +59,11 @@ if (directoryExists(ANDROID_PLATFORM_ROOT)) {
     if (fileExists(ANDROID_CONFIG_PATH)) {
         try {
             var ANDROID_CONFIG_CONTENTS = fs.readFileSync().toString();
-            fs.writeFileSync('platforms/android/google-services.json', ANDROID_CONFIG_CONTENTS);
+            fs.writeFileSync(path.join(ANDROID_PLATFORM_ROOT, 'google-services.json'), ANDROID_CONFIG_CONTENTS);
 
             var ANDROID_CONFIG_JSON = require(ANDROID_CONFIG_PATH);
-            var strings = fs.readFileSync('platforms/android/res/values/strings.xml').toString();
+            var STRINGS_PATH = path.resolve(ANDROID_PLATFORM_ROOT, 'res', 'values', 'strings.xml');
+            var strings = fs.readFileSync(STRINGS_PATH).toString();
 
             // strip non-default value
             strings = strings.replace(new RegExp('<string name=\'google_app_id\'>([^\@<]+?)</string>', 'i'), '');
@@ -79,7 +80,7 @@ if (directoryExists(ANDROID_PLATFORM_ROOT)) {
             // replace the default value
             strings = strings.replace(new RegExp('<string name=\'google_api_key\'>([^<]+?)</string>', 'i'), '<string name=\'google_api_key\'>' + ANDROID_CONFIG_JSON.client[0].api_key[0].current_key + '</string>');
 
-            fs.writeFileSync('platforms/android/res/values/strings.xml', strings);
+            fs.writeFileSync(STRINGS_PATH, strings);
         } catch (err) {
             process.stdout.write(err);
         }
